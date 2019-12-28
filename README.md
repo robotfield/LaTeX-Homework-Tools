@@ -179,7 +179,7 @@ the project directory.  This is to avoid constantly copying headers in many simi
 projects, and keep paths inputted into the LaTeX document local.
 
 The `-n/--no-symlink` option recursively copies the `defaults` directory into the
-project directory instead of symlinking it.  This is be necessary if the project
+project directory instead of symlinking it.  This is necessary if the project
 will be compiled on a different computer.
 
 If `-o` is specified, the output file name will be inserted into the first line of
