@@ -26,19 +26,19 @@ This also works for numbers and Roman numerals.  For example the following forma
 
 ```
 list
-	1 .. 5
-	list
-		a
-		list
-			i
-			..
-			iv
-		end
-		b
-		..
-		e
-	end
-	6 7
+ 1 .. 5
+  list
+   a
+   list
+      i
+      ..
+      iv
+    end
+    b
+    ..
+    e
+  end
+  6 7
 end
 ```
 expands to this:
@@ -81,13 +81,13 @@ These format statements can either be read as a string in the commandline
 
 ### Separate Homework Files
 
-If the `-g` option is enabled, `genlatex.py` will generate files in a `problems/`
+If the `-g/--generate-files` option is enabled, `genlatex.py` will generate files in a `problems/`
 directory for each entry in a `list` statement (besides nested statements), and
 use `\input{}` to insert them into the resulting LaTeX document.
 Each nested list statement will create a subdirectory in `problems/` (or whichever
 directory the outer list statement occupies) to contain its entries.
 
-For example, running 
+For example, running (in a UNIX-like system)
 ```
 $ genlatex.py -gf example_structure.txt -o main.tex
 $ cd problems
@@ -115,3 +115,95 @@ problems/
 
 2 directories, 14 files
 ```
+
+and main.tex will contain
+```
+...
+
+\begin{enumerate}
+      \item[1.]
+        \input{problems/1.tex}
+      \item[2.]
+        \input{problems/2.tex}
+      \item[3.]
+        \input{problems/3.tex}
+      \item[4.]
+        \input{problems/4.tex}
+      \item[5.]
+      \begin{enumerate}
+        \item[a.]
+        \begin{enumerate}
+                \item[i.]
+                        \input{problems/5/a/i.tex}
+                \item[ii.]
+                        \input{problems/5/a/ii.tex}
+                \item[iii.]
+                        \input{problems/5/a/iii.tex}
+                \item[iv.]
+                        \input{problems/5/a/iv.tex}
+        \end{enumerate}
+        \item[b.]
+                \input{problems/5/b.tex}
+        \item[c.]
+                \input{problems/5/c.tex}
+        \item[d.]
+                \input{problems/5/d.tex}
+        \item[e.]
+                \input{problems/5/e.tex}
+      \end{enumerate}
+      \item[6.]
+        \input{problems/6.tex}
+      \item[7.]
+        \input{problems/7.tex}
+\end{enumerate}
+...
+```
+
+### `\maketitle` Info
+
+By default, `genlatex.py` will set the author to be "Anonymous", the title to be
+the name of the current directory, and the date to be the current date in
+"[Day] [Month Name] [Full Year]" format.  The strings for all ofthese can be
+changed by using `-a/--author`, `-t/--title`, and `-d/--date`.
+
+###  Linking and Auto-Generated Directories+Files
+
+`genlatex.py` expects `~/latexdefaults/` (the '`defaults`' directory), 
+`~/latexdefaults/defaults.tex`, and `/latexdefaults/optional/` to exist, as of now.
+The `defaults` directory path can be changed using `--defaults`.  However, if they
+do not exist, they will be auto-generated.  Note that passing `--defaults "defaults"`
+to `genlatex.py` will result in the defaults directory being generated locally.
+
+Additionally, by default, a symlink to the defaults directory will be generated in
+the project directory.  This is to avoid constantly copying headers in many similar
+projects, and keep paths inputted into the LaTeX document local.
+
+The `-n/--no-symlink` option recursively copies the `defaults` directory into the
+project directory instead of symlinking it.  This is be necessary if the project
+will be compiled on a different computer.
+
+If `-o` is specified, the output file name will be inserted into the first line of
+a file called `.genlatex_project_info`.  This is so that `compile_latex_project.sh`
+knows what the main `tex` file is.  (The file is also used by 
+`compile_latex_project.sh` to detect changes to `tex` files in the project
+directory with md5 sums, which are placed on the second line, but `genlatex.py`
+does not calculate these sums.)
+
+###  Inputting Defaults
+
+`defaults/defaults.tex` is automatically inputted into the preamble of the output.
+
+Additional `tex` files can be inputted from the `defaults/optional` directory using
+the `--optional` option.  For example, if one wanted to write a Physics homework
+document, and wanted to include a file called `defaults/optional/physics.tex`
+for specialized Physics LaTeX commands, then they could run 
+`genlatex.py --optional physics`.
+
+##  `compile_latex_project.sh`
+
+
+This is a very simple script which checks the project's `.tex` files for changes
+every second, then recompiles the entire project if it changes.  Exit with CTRL-C.
+
+Currently relies on `.genlatex_project_info` existing and containing the name of 
+the main document on the first line.

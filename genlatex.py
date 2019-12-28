@@ -380,7 +380,8 @@ def main():
 		if(args.no_symlink):
 			copytree(args.defaults_path,local_defaults_path)
 		else:
-			os.symlink(args.defaults_path,local_defaults_path)
+			if os.path.realpath(args.defaults_path) != os.path.realpath(local_defaults_path):
+				os.symlink(args.defaults_path,local_defaults_path)
 	
 	parsed = []
 	
