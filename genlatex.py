@@ -164,6 +164,8 @@ def indents(num):
 	return ' '.join(['\t' for _ in range(0,int(num))])
 
 def gen_enumerate(lst,indent=0):
+	if(lst == []):
+		return []
 	tabs = indents(indent)
 	output = [tabs+"\\begin{enumerate}"]
 	for i in lst:
@@ -330,6 +332,7 @@ def main():
 						help="Specify document structure input file path.")
 	parser.add_argument("-s","--string",
 						dest="string",
+						default='',
 						help="Specify document structure as a string (overrides file input).")
 	parser.add_argument("-a","--author",
 						dest="author",
@@ -383,7 +386,7 @@ def main():
 	
 	if(len(args.filepath) != 0):
 		parsed = tex_from_file(args.filepath,args.genfiles)
-	else:
+	elif(len(args.string) != 0):
 		parsed = tex_from_str(args.string,args.genfiles)
 	
 	if(args.genfiles):
