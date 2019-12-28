@@ -1,11 +1,15 @@
 list
-a
-list
-i
-..
-iv
-end
-b
-..
-e
+	1 .. 5
+	list
+		a
+		list
+			i
+			..
+			iv
+		end
+		b
+		..
+		e
+	end
+	6 7
 end
