@@ -159,6 +159,14 @@ and main.tex will contain
 ...
 ```
 
+`-b/--generate-files-boxes` does the same thing as `-g`, except it makes each problem
+file contain the following:
+```
+\begin{mdframed}
+
+\end{mdframed}
+```
+
 ### `\maketitle` Info
 
 By default, `genlatex.py` will set the author to be "Anonymous", the title to be
