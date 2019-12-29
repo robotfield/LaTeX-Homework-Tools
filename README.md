@@ -167,6 +167,8 @@ file contain the following:
 \end{mdframed}
 ```
 
+Note that this requires `\usepackage{mdframed}`
+
 ### `\maketitle` Info
 
 By default, `genlatex.py` will set the author to be "Anonymous", the title to be
