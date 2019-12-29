@@ -5,6 +5,7 @@ import sys
 import csv
 import argparse
 import shutil
+import datetime
 
 from pathlib import Path
 
@@ -231,7 +232,7 @@ def form_file_rec(lst,i,genfiles,path):
 			if(isroman(first) and isroman(last)):
 				temp = roman_range(Roman(first),Roman(last)+1)
 			elif(first.isnumeric() and last.isnumeric()):
-				temp = zpad_range(int(first),int(last)+1)
+				temp = [str(x) for x in range(int(first),int(last)+1)]
 			elif(first.isalpha() and len(first) == 1 and last.isalpha() and len(last) == 1):
 				temp = chr_range(first,last)
 			else:
@@ -273,8 +274,6 @@ def tex_from_str(string,genfiles=False):
 	lst = string.split()
 	return tex_from_lst(lst,genfiles)
 
-import datetime
-
 def getdate():
 	date = datetime.datetime.now()
 	return date.strftime("%d %B %Y")
@@ -285,7 +284,7 @@ def mkdir_p(path):
 	except FileExistsError:
 		pass
 
-def make_recursive_directories(lst,path="problems/"):
+def make_recursive_directories(lst,path="problems/",genboxes=False):
 	i = 0
 	
 	mkdir_p(path)
@@ -297,8 +296,12 @@ def make_recursive_directories(lst,path="problems/"):
 			else:
 				Path(lst[i][1]).touch(exist_ok=True)
 		else:
-			print("Creating entry for " + lst[i])
-			Path(path + lst[i]+".tex").touch(exist_ok=True)
+			name = path + lst[i]+".tex"
+			Path(name).touch(exist_ok=True)
+			if(os.stat(name).st_size == 0 and genboxes):
+				tempfile = open(name,'w')
+				print("\\begin{mdframed}\n\n\\end{mdframed}",file=tempfile)
+				tempfile.close()
 		i += 1
 
 def check_defaults_dir(defaults_dir):
@@ -351,6 +354,11 @@ def main():
 						default=False,
 						action="store_true",
 						help="Make the script generate individual problem files stored in the 'problems' directory according to the document structure.  Input statements are auto-generated for all problems.")
+	parser.add_argument("-b","--generate-files-boxes",
+						dest="boxes",
+						default=False,
+						action="store_true",
+						help="Same as -g/--generate-files, except it puts mdframed boxes in each file.")
 	parser.add_argument("--defaults",
 						dest="defaults_path",
 						default=str(Path.home())+"/latexdefaults",
@@ -390,8 +398,8 @@ def main():
 	elif(len(args.string) != 0):
 		parsed = tex_from_str(args.string,args.genfiles)
 	
-	if(args.genfiles):
-		make_recursive_directories(parsed)
+	if(args.genfiles or args.boxes):
+		make_recursive_directories(parsed,genboxes=args.boxes)
 	
 	output_file = sys.stdout
 	
