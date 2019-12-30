@@ -146,6 +146,7 @@ def zpad(i,pad):
 	zrs = ''
 	while(len(string)+len(zrs) < pad):
 		zrs += '0'
+		
 	return zrs+string
 
 def zpad_range(a,b):
@@ -180,7 +181,9 @@ def lastslash(arg):
 	while(i >= 0):
 		if(string[i] == '/'):
 			return string[i+1:]
+			
 		i -= 1
+		
 	return string
 	
 # Printing
@@ -188,6 +191,7 @@ def lastslash(arg):
 def print_list(lst,file=sys.stdout):
 	if(type(lst) == list):
 		map(lambda x: print_list(x,file),lst)
+		
 	else:
 		print(lst,file=file)
 
